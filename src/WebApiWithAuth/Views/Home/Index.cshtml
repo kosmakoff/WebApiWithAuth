@@ -1,0 +1,23 @@
+﻿@{ 
+	ViewBag.Title = "Home";
+}
+
+<h1>
+	Hello, World!
+</h1>
+<p>User is authenticated? @User.Identities.Any(identity => identity.IsAuthenticated)</p>
+@if (User.Identities.Any(identity => identity.IsAuthenticated))
+{
+	foreach (var identity in User.Identities)
+	{
+		<h2>Identity claims: (authenticated = @identity.IsAuthenticated)</h2>
+		<ul>
+			@foreach (var claim in identity.Claims)
+			{
+				<li>
+					Type = @claim.Type, Value = @claim.Value, ValueType = @claim.ValueType, Issuer = @claim.Issuer
+				</li>
+			}
+		</ul>
+	}
+}
