@@ -1,11 +1,21 @@
-﻿@{ 
+﻿@using System.Security.Claims
+@using Microsoft.AspNet.Authorization
+@inject UserManager<ApplicationUser> _userManager
+@inject SignInManager<ApplicationUser> _signinManager
+@inject IAuthorizationService _authorizationService
+@{ 
 	ViewBag.Title = "Home";
+	var user = await _userManager.FindByIdAsync(User.GetUserId());
+	_signinManager.
 }
 
 <h1>
 	Hello, World!
 </h1>
-<p>User ID = </p>
+<p>User ID = @User.GetUserId()</p>
+<p>User Name = @User.GetUserName()</p>
+<p>User Email = @user.Email</p>
+<p>Has Admin Role = </p>
 <p>User is authenticated? @User.Identities.Any(identity => identity.IsAuthenticated)</p>
 @if (User.Identities.Any(identity => identity.IsAuthenticated))
 {

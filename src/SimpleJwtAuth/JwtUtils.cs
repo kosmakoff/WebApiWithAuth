@@ -64,5 +64,20 @@ namespace SimpleJwtAuth
                 }
             }
         }
+
+        public static string TokenToString(JsonWebToken token)
+        {
+            var header = JsonToBase64Url(token.Header);
+            var payload = JsonToBase64Url(token.Payload);
+            return $"{header}.{payload}.{token.Signature}";
+        }
+
+        private static string JsonToBase64Url(object json)
+        {
+            var jsonString = JsonConvert.SerializeObject(json);
+            var bytes = Encoding.UTF8.GetBytes(jsonString);
+            var result = Base64UrlTextEncoder.Encode(bytes);
+            return result;
+        }
     }
 }

@@ -9,6 +9,8 @@ using WebApiWithAuth.Models;
 using SimpleJwtAuth;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using Microsoft.AspNet.Authentication.Cookies;
+using System.Threading.Tasks;
 
 namespace WebApiWithAuth
 {
@@ -48,6 +50,22 @@ namespace WebApiWithAuth
 
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
+
+                options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = ctx =>
+                    {
+                        if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                        {
+                            ctx.Response.StatusCode = 401;
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
+                        return Task.FromResult<object>(null);
+                    }
+                };
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -65,7 +83,6 @@ namespace WebApiWithAuth
 
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
@@ -84,30 +101,7 @@ namespace WebApiWithAuth
                 options.ClientSecret = Configuration["google:secret"];
             });
 
-            app.UseJwtBearerAuthentication(options =>
-            {
-                options.RequireHttpsMetadata = false;
-
-                options.AutomaticAuthenticate = true;
-                options.AutomaticChallenge = true;
-
-                
-                RsaSecurityKey key;
-                RSAParameters @params;
-                var provider = new RSACryptoServiceProvider(256);
-                
-
-                //@params = new RSAParameters();
-                //key = new RsaSecurityKey(@params);
-
-                //options.TokenValidationParameters.IssuerSigningKey = key;
-                options.TokenValidationParameters.ValidateAudience = false;
-                options.TokenValidationParameters.ValidateIssuer = false;
-                options.TokenValidationParameters.ValidateSignature = false;
-            });
-
-            /*
-            app.UseSimpleJwtAuth(options =>
+            app.UseSimpleJwtAuth<ApplicationUser>(options =>
             {
                 options.Audience = "My Audience";
                 options.ClaimsIssuer = "My Issuer";
@@ -117,7 +111,6 @@ namespace WebApiWithAuth
                 options.AutomaticAuthenticate = true;
                 options.AutomaticChallenge = true;
             });
-            */
 
             app.UseMvc(routeBuilder =>
             {
