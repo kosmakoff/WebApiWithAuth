@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Mvc;
-using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApiWithAuth.Models;
 using WebApiWithAuth.ViewModels.DTO;
@@ -11,14 +12,13 @@ using WebApiWithAuth.ViewModels.ManageUsers;
 namespace WebApiWithAuth.Controllers
 {
     [Authorize]
-    public class ManageUsersController : Controller
+    public class ManageUsersController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
 
         public ManageUsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+            : base(userManager)
         {
-            _userManager = userManager;
             _roleManager = roleManager;
         }
 
@@ -38,6 +38,23 @@ namespace WebApiWithAuth.Controllers
             }
 
             return View(usersModel);
+        }
+
+        public async Task<IActionResult> AssignRoles()
+        {
+            var user = await GetCurrentUserAsync();
+
+            if (!(await _roleManager.RoleExistsAsync("Administrators")))
+            {
+                var role = new ApplicationRole() { Name = "Administrators" };
+                role.Claims.Add(new IdentityRoleClaim<string> { ClaimType = ClaimTypes.PrimarySid, ClaimValue = "001" });
+
+                await _roleManager.CreateAsync(role);
+            }
+
+            await _userManager.AddToRoleAsync(user, "Administrators");
+
+            return RedirectToAction(nameof(ShowUsers));
         }
     }
 }
