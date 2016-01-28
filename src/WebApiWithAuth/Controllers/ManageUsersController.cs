@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using WebApiWithAuth.ViewModels.ManageUsers;
 
 namespace WebApiWithAuth.Controllers
 {
+    [Authorize]
     public class ManageUsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

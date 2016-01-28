@@ -1,7 +1,9 @@
 ﻿{
 	"projects": [
 		"src",
-		"test"
+		"test",
+		"c:/dev/github/aspnet/Identity/src",
+		"c:/dev/github/aspnet/Security/src"
 	],
 	"sdk": {
 		"version": "1.0.0-rc1-final"

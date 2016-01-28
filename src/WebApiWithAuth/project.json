@@ -24,7 +24,9 @@
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
     "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
     "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-rc1-final",
-    "Microsoft.AspNet.Authentication.Google": "1.0.0-rc1-final"
+    "Microsoft.AspNet.Authentication.Google": "1.0.0-rc1-final",
+    "SimpleJwtAuth": "",
+    "Microsoft.AspNet.Authentication.JwtBearer": "1.0.0-rc1-final"
   },
 
   "commands": {

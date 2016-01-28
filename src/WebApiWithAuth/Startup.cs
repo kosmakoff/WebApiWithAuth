@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Http;
 using Microsoft.Data.Entity;
 using WebApiWithAuth.Models;
+using SimpleJwtAuth;
+using System.IdentityModel.Tokens;
+using System.Security.Cryptography;
 
 namespace WebApiWithAuth
 {
@@ -40,6 +43,11 @@ namespace WebApiWithAuth
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonLetterOrDigit = false;
                 options.Password.RequireUppercase = false;
+
+                options.Lockout.AllowedForNewUsers = false;
+
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -72,9 +80,44 @@ namespace WebApiWithAuth
 
             app.UseGoogleAuthentication(options =>
             {
-                options.ClientId = Configuration["openid:clientid"];
-                options.ClientSecret = Configuration["openid:secret"];
+                options.ClientId = Configuration["google:clientId"];
+                options.ClientSecret = Configuration["google:secret"];
             });
+
+            app.UseJwtBearerAuthentication(options =>
+            {
+                options.RequireHttpsMetadata = false;
+
+                options.AutomaticAuthenticate = true;
+                options.AutomaticChallenge = true;
+
+                
+                RsaSecurityKey key;
+                RSAParameters @params;
+                var provider = new RSACryptoServiceProvider(256);
+                
+
+                //@params = new RSAParameters();
+                //key = new RsaSecurityKey(@params);
+
+                //options.TokenValidationParameters.IssuerSigningKey = key;
+                options.TokenValidationParameters.ValidateAudience = false;
+                options.TokenValidationParameters.ValidateIssuer = false;
+                options.TokenValidationParameters.ValidateSignature = false;
+            });
+
+            /*
+            app.UseSimpleJwtAuth(options =>
+            {
+                options.Audience = "My Audience";
+                options.ClaimsIssuer = "My Issuer";
+
+                options.Secret = "secret";
+
+                options.AutomaticAuthenticate = true;
+                options.AutomaticChallenge = true;
+            });
+            */
 
             app.UseMvc(routeBuilder =>
             {
