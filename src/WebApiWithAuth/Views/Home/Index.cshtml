@@ -6,19 +6,33 @@
 @inject IAuthorizationService _authorizationService
 @{ 
 	ViewBag.Title = "Home";
-	var user = await _userManager.FindByIdAsync(User.GetUserId());
 }
 
-<h1>
-	Hello, World!
-</h1>
-<p>User is authenticated? @User.IsSignedIn()</p>
 @if (User.IsSignedIn())
 {
-	<p>User ID = @user.Id</p>
-	<p>User Name = @user.UserName</p>
-	<p>User Email = @user.Email</p>
-	<h2>User Claims:</h2>
+	<h2>User Identities: (Count = @User.Identities.Count())</h2>
+	@foreach(var identity in User.Identities)
+	{
+		<p>Name = @identity.Name</p>
+		<h2>Identity claims:</h2>
+		<ul>
+			@foreach (var claim in identity.Claims)
+			{
+				<li><p>Type = @claim.Type, Value = @claim.Value</p></li>
+			}
+		</ul>
+	}
+
+	var user = await _userManager.FindByIdAsync(User.GetUserId());
+	var roles = user.Roles.ToList();
+
+	<p>===== ROLES COUNT: @roles.Count ========</p>
+
+	<br />
+	<p>Application User ID = @user.Id</p>
+	<p>Application User Name = @user.UserName</p>
+	<p>Application User Email = @user.Email</p>
+	<h2>Application User Claims:</h2>
 	<ul>
 		@foreach (var claim in user.Claims)
 		{
@@ -28,7 +42,7 @@
 		}
 	</ul>
 
-	<h2>User Roles:</h2>
+	<h2>User Roles (Count = @user.Roles.Count()):</h2>
 
 	<ol>
 		@foreach(var role in user.Roles)
@@ -47,4 +61,19 @@
 
 		}
 	</ol>
+
+	var rolesOtherWay = await _userManager.GetRolesAsync(user);
+
+	<p>Got roles other way:</p>
+	<ul>
+		@foreach (var role in rolesOtherWay)
+		{
+			<li>-- @role --</li>
+
+		}
+	</ul>
+}
+else
+{
+	<p>User is not authenticated</p>
 }

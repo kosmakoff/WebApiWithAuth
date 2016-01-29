@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using Microsoft.AspNet.Authentication.Cookies;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace WebApiWithAuth
 {
@@ -68,7 +69,9 @@ namespace WebApiWithAuth
                 };
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddUserStore<MyUserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, string>>()
+                .AddRoleStore<MyRoleStore<ApplicationRole, ApplicationDbContext, string>>();
 
             // Add framework services.
             services.AddMvc();
@@ -103,10 +106,10 @@ namespace WebApiWithAuth
 
             app.UseSimpleJwtAuth<ApplicationUser>(options =>
             {
-                options.Audience = "My Audience";
-                options.ClaimsIssuer = "My Issuer";
+                options.Audience = Configuration["jwt:audience"];
+                options.ClaimsIssuer = Configuration["jwt:issuer"];
 
-                options.Secret = "secret";
+                options.Secret = Configuration["jwt:secret"];
 
                 options.AutomaticAuthenticate = true;
                 options.AutomaticChallenge = true;
