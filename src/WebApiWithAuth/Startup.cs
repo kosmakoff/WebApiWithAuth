@@ -47,6 +47,7 @@ namespace WebApiWithAuth
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
 
+                /*
                 options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
                 {
                     OnRedirectToLogin = ctx =>
@@ -62,6 +63,7 @@ namespace WebApiWithAuth
                         return Task.FromResult<object>(null);
                     }
                 };
+                */
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Authorization;
+using SimpleJwtAuth;
 
 namespace WebApiWithAuth.Controllers
 {
@@ -19,7 +20,7 @@ namespace WebApiWithAuth.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(ActiveAuthenticationSchemes = SimpleJwtAuthDefaults.AuthenticationScheme)]
         public string Get(int id)
         {
             return "value";

@@ -2,10 +2,11 @@
 using Microsoft.AspNet.Http.Authentication;
 using Newtonsoft.Json;
 using System;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNet.Identity;
 
 namespace SimpleJwtAuth
 {
@@ -70,12 +71,22 @@ namespace SimpleJwtAuth
                 return AuthenticateResult.Failed("User ID is null.");
             }
 
-            var claimsIdentity = new ClaimsIdentity();
+            var userManager = Context.RequestServices.GetRequiredService<UserManager<TUser>>();
+            var signinManager = Context.RequestServices.GetRequiredService<SignInManager<TUser>>();
 
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
+            var user = await userManager.FindByIdAsync(userId);
 
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            var ticket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties(), Options.AuthenticationScheme);
+            if (user == null)
+            {
+                return AuthenticateResult.Failed("User not found.");
+            }
+
+            var principal = await signinManager.CreateUserPrincipalAsync(user);
+
+            // var claimsIdentity = new ClaimsIdentity();
+            // claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
+            // var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), Options.AuthenticationScheme);
 
             return AuthenticateResult.Success(ticket);
         }
