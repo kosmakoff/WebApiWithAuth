@@ -8,25 +8,28 @@
 	ViewBag.Title = "Home";
 }
 
+<h3>User Identities: (Count = @User.Identities.Count())</h3>
+<ol>
+	@foreach (var identity in User.Identities)
+	{
+		<li>
+			<p>Identity claims:</p>
+			<ul>
+				@foreach (var claim in identity.Claims)
+				{
+					<li><p>Type = @claim.Type, Value = @claim.Value</p></li>
+				}
+			</ul>
+		</li>
+	}
+</ol>
+
+<br />
+
 @if (User.IsSignedIn())
 {
-	<h2>User Identities: (Count = @User.Identities.Count())</h2>
-	@foreach(var identity in User.Identities)
-	{
-		<p>Name = @identity.Name</p>
-		<h2>Identity claims:</h2>
-		<ul>
-			@foreach (var claim in identity.Claims)
-			{
-				<li><p>Type = @claim.Type, Value = @claim.Value</p></li>
-			}
-		</ul>
-	}
-
 	var user = await _userManager.FindByIdAsync(User.GetUserId());
 	var roles = user.Roles.ToList();
-
-	<p>===== ROLES COUNT: @roles.Count ========</p>
 
 	<br />
 	<p>Application User ID = @user.Id</p>
@@ -75,5 +78,5 @@
 }
 else
 {
-	<p>User is not authenticated</p>
+	<h3>User is not authenticated</h3>
 }
