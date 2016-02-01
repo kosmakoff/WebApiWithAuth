@@ -7,11 +7,8 @@ using Microsoft.AspNet.Http;
 using Microsoft.Data.Entity;
 using WebApiWithAuth.Models;
 using SimpleJwtAuth;
-using System.IdentityModel.Tokens;
-using System.Security.Cryptography;
 using Microsoft.AspNet.Authentication.Cookies;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 
 namespace WebApiWithAuth
 {
@@ -32,8 +29,6 @@ namespace WebApiWithAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddAuthentication(sharedOptions => sharedOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
-
             services.AddEntityFramework()
                 .AddSqlServer()
                 .AddDbContext<ApplicationDbContext>(options =>
@@ -98,18 +93,20 @@ namespace WebApiWithAuth
 
             app.UseIdentity();
 
+            /*
             app.UseGoogleAuthentication(options =>
             {
                 options.ClientId = Configuration["google:clientId"];
                 options.ClientSecret = Configuration["google:secret"];
             });
+            */
 
             app.UseSimpleJwtAuth<ApplicationUser>(options =>
             {
-                options.Audience = Configuration["jwt:audience"];
-                options.ClaimsIssuer = Configuration["jwt:issuer"];
+                options.Audience = Configuration["jwt:audience"] ?? "Sample Audience";
+                options.ClaimsIssuer = Configuration["jwt:issuer"] ?? "Sample Issuer";
 
-                options.Secret = Configuration["jwt:secret"];
+                options.Secret = Configuration["jwt:secret"] ?? "SECRET";
 
                 options.AutomaticAuthenticate = true;
                 options.AutomaticChallenge = true;

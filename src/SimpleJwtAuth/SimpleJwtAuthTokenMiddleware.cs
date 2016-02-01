@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity;
@@ -30,14 +27,18 @@ namespace SimpleJwtAuth
             if (httpContext.Request.Method == HttpMethod.Post.Method &&
                 httpContext.Request.Path.StartsWithSegments(_options.TokenEndpoint))
             {
+                if (!httpContext.Request.HasFormContentType)
+                {
+                    await WriteResult(httpContext, isSuccess: false, error: "Request should include form data.");
+                    return;
+                }
+
                 var username = httpContext.Request.Form["username"];
                 var password = httpContext.Request.Form["password"];
 
                 if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 {
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    await httpContext.Response.WriteAsync("Username or password missing");
-
+                    await WriteResult(httpContext, isSuccess: false, error: "Username or password missing.");
                     return;
                 }
 
@@ -45,7 +46,7 @@ namespace SimpleJwtAuth
 
                 if (user == null)
                 {
-                    await WriteResult(httpContext, isSuccess: false);
+                    await WriteResult(httpContext, isSuccess: false, error: "User not found.");
                     return;
                 }
 
@@ -73,12 +74,13 @@ namespace SimpleJwtAuth
             }
         }
 
-        private async Task WriteResult(HttpContext httpContext, bool isSuccess, string token = null)
+        private async Task WriteResult(HttpContext httpContext, bool isSuccess, string token = null, string error = null)
         {
             var response = JsonConvert.SerializeObject(new
             {
                 success = isSuccess,
-                token = token
+                token = token,
+                error = error
             });
 
             httpContext.Response.ContentType = "application/json";

@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.WebEncoders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleJwtAuth
 {
-    public class SimpleJwtAuthMiddleware : AuthenticationMiddleware<SimpleJwtAuthOptions>
+    public class SimpleJwtAuthMiddleware<TUser> : AuthenticationMiddleware<SimpleJwtAuthOptions>
+        where TUser : IdentityUser
     {
         public SimpleJwtAuthMiddleware(RequestDelegate next,
             ILoggerFactory loggerFactory,
@@ -45,7 +44,7 @@ namespace SimpleJwtAuth
 
         protected override AuthenticationHandler<SimpleJwtAuthOptions> CreateHandler()
         {
-            return new SimpleJwtAuthHandler();
+            return new SimpleJwtAuthHandler<TUser>();
         }
     }
 }

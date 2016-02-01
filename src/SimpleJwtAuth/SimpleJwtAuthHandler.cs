@@ -2,16 +2,17 @@
 using Microsoft.AspNet.Http.Authentication;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Http.Features.Authentication;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SimpleJwtAuth
 {
-    public class SimpleJwtAuthHandler : AuthenticationHandler<SimpleJwtAuthOptions>
+    public class SimpleJwtAuthHandler<TUser> : AuthenticationHandler<SimpleJwtAuthOptions>
+        where TUser :IdentityUser
     {
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
@@ -71,13 +72,14 @@ namespace SimpleJwtAuth
                 return AuthenticateResult.Failed("User ID is null.");
             }
 
-            var claimsIdentity = new ClaimsIdentity("Microsoft.AspNet.Identity.Application",
-                ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            var claimsIdentity = new ClaimsIdentity();
 
             claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
 
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var ticket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties(), Options.AuthenticationScheme);
+
+            var signInManager = Context.RequestServices.GetRequiredService<SignInManager<TUser>>();
 
             return AuthenticateResult.Success(ticket);
         }

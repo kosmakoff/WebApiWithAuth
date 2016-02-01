@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -9,8 +6,8 @@ namespace SimpleJwtAuth
 {
     public static class SimpleJwtAuthAppBuilderExtensions
     {
-        public static IApplicationBuilder UseSimpleJwtAuth<T>(this IApplicationBuilder app, SimpleJwtAuthOptions options)
-            where T : IdentityUser
+        public static IApplicationBuilder UseSimpleJwtAuth<TUser>(this IApplicationBuilder app, SimpleJwtAuthOptions options)
+            where TUser : IdentityUser
         {
             if (app == null)
             {
@@ -23,12 +20,12 @@ namespace SimpleJwtAuth
             }
 
             return app
-                .UseMiddleware<SimpleJwtAuthMiddleware>(options)
-                .UseMiddleware<SimpleJwtAuthTokenMiddleware<T>>(options);
+                .UseMiddleware<SimpleJwtAuthMiddleware<TUser>>(options)
+                .UseMiddleware<SimpleJwtAuthTokenMiddleware<TUser>>(options);
         }
 
-        public static IApplicationBuilder UseSimpleJwtAuth<T>(this IApplicationBuilder app, Action<SimpleJwtAuthOptions> configureOptions)
-            where T : IdentityUser
+        public static IApplicationBuilder UseSimpleJwtAuth<TUser>(this IApplicationBuilder app, Action<SimpleJwtAuthOptions> configureOptions)
+            where TUser : IdentityUser
         {
             if (app == null)
             {
@@ -40,7 +37,7 @@ namespace SimpleJwtAuth
             {
                 configureOptions(options);
             }
-            return app.UseSimpleJwtAuth<T>(options);
+            return app.UseSimpleJwtAuth<TUser>(options);
         }
     }
 }
