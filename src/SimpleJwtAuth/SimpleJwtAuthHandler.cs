@@ -6,8 +6,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SimpleJwtAuth
 {
@@ -78,8 +76,6 @@ namespace SimpleJwtAuth
 
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             var ticket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties(), Options.AuthenticationScheme);
-
-            var signInManager = Context.RequestServices.GetRequiredService<SignInManager<TUser>>();
 
             return AuthenticateResult.Success(ticket);
         }
