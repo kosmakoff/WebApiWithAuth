@@ -1,0 +1,7 @@
+﻿{
+	"server": "Microsoft.AspNet.Server.Kestrel",
+	"server.urls": "http://web.local:9080;https://web.local:9443",
+	"Hosting": {
+		"Environment": "Development"
+	}
+}

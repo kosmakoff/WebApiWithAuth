@@ -7,8 +7,10 @@ using Microsoft.AspNet.Http;
 using Microsoft.Data.Entity;
 using WebApiWithAuth.Models;
 using SimpleJwtAuth;
-using Microsoft.AspNet.Authentication.Cookies;
-using System.Threading.Tasks;
+using Microsoft.AspNet.Http.Features;
+using Microsoft.AspNet.Server.Kestrel;
+using Microsoft.AspNet.Server.Kestrel.Https;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebApiWithAuth
 {
@@ -19,7 +21,7 @@ namespace WebApiWithAuth
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables()
+                .AddJsonFile("hosting.json")
                 .AddUserSecrets();
             Configuration = builder.Build();
         }
@@ -27,12 +29,12 @@ namespace WebApiWithAuth
         public IConfigurationRoot Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services, IHostingEnvironment env)
         {
             services.AddEntityFramework()
                 .AddSqlServer()
                 .AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+                    options.UseSqlServer(Configuration[$"Data:{env.EnvironmentName}:ConnectionString"]));
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
@@ -77,9 +79,7 @@ namespace WebApiWithAuth
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IHttpContextAccessor contextAccessor)
         {
-            loggerFactory.MinimumLevel = LogLevel.Debug;
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
@@ -90,6 +90,13 @@ namespace WebApiWithAuth
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            //if (env.IsProduction())
+            //{
+            //    var ksi = app.ServerFeatures.Get<IKestrelServerInformation>();
+            //    ksi.NoDelay = true;
+            //    app.UseKestrelHttps(new X509Certificate2(@"c:\Dev\CA\web.local.pfx"));
+            //}
 
             // app.UseStaticFiles();
 
