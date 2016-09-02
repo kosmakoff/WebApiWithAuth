@@ -1,6 +1,7 @@
 ﻿using System;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace SimpleJwtAuth
 {
@@ -20,24 +21,8 @@ namespace SimpleJwtAuth
             }
 
             return app
-                .UseMiddleware<SimpleJwtAuthMiddleware<TUser>>(options)
-                .UseMiddleware<SimpleJwtAuthTokenMiddleware<TUser>>(options);
-        }
-
-        public static IApplicationBuilder UseSimpleJwtAuth<TUser>(this IApplicationBuilder app, Action<SimpleJwtAuthOptions> configureOptions)
-            where TUser : IdentityUser
-        {
-            if (app == null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            var options = new SimpleJwtAuthOptions();
-            if (configureOptions != null)
-            {
-                configureOptions(options);
-            }
-            return app.UseSimpleJwtAuth<TUser>(options);
+                .UseMiddleware<SimpleJwtAuthMiddleware<TUser>>(Options.Create(options))
+                .UseMiddleware<SimpleJwtAuthTokenMiddleware<TUser>>(Options.Create(options));
         }
     }
 }

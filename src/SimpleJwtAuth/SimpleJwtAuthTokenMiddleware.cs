@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.Net.Http;
 using System.Net;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace SimpleJwtAuth
@@ -16,10 +16,10 @@ namespace SimpleJwtAuth
         private readonly RequestDelegate _next;
         private readonly SimpleJwtAuthOptions _options;
 
-        public SimpleJwtAuthTokenMiddleware(RequestDelegate next, SimpleJwtAuthOptions options)
+        public SimpleJwtAuthTokenMiddleware(RequestDelegate next, IOptions<SimpleJwtAuthOptions> options)
         {
             _next = next;
-            _options = options;
+            _options = options.Value;
         }
 
         public async Task Invoke(HttpContext httpContext, UserManager<T> userManager)

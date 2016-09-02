@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNet.Authentication;
-using Microsoft.AspNet.Http.Authentication;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 
 namespace SimpleJwtAuth
 {
@@ -22,7 +22,7 @@ namespace SimpleJwtAuth
 
             if (string.IsNullOrEmpty(authorization))
             {
-                return AuthenticateResult.Failed("No authorization header.");
+                return AuthenticateResult.Fail("No authorization header.");
             }
 
             if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
@@ -33,16 +33,16 @@ namespace SimpleJwtAuth
             // If no token found, no further work possible
             if (string.IsNullOrEmpty(token))
             {
-                return AuthenticateResult.Failed("No bearer token.");
+                return AuthenticateResult.Fail("No bearer token.");
             }
 
             // decode token
 
-            var tokenParts = token.Split(new[] { '.' });
+            var tokenParts = token.Split('.');
 
             if (tokenParts.Length != 3)
             {
-                return AuthenticateResult.Failed("Invalid token format.");
+                return AuthenticateResult.Fail("Invalid token format.");
             }
 
             var headerPart = tokenParts[0];
@@ -54,7 +54,7 @@ namespace SimpleJwtAuth
             var validSignature = JwtUtils.CalculateSignature(headerPart, payloadPart, Options.Secret);
             if (string.CompareOrdinal(signature, validSignature) != 0)
             {
-                return AuthenticateResult.Failed("Signature doesn't match.");
+                return AuthenticateResult.Fail("Signature doesn't match.");
             }
 
             // ignore header for now
@@ -68,7 +68,7 @@ namespace SimpleJwtAuth
 
             if (string.IsNullOrEmpty(userId))
             {
-                return AuthenticateResult.Failed("User ID is null.");
+                return AuthenticateResult.Fail("User ID is null.");
             }
 
             var userManager = Context.RequestServices.GetRequiredService<UserManager<TUser>>();
@@ -78,7 +78,7 @@ namespace SimpleJwtAuth
 
             if (user == null)
             {
-                return AuthenticateResult.Failed("User not found.");
+                return AuthenticateResult.Fail("User not found.");
             }
 
             var principal = await signinManager.CreateUserPrincipalAsync(user);

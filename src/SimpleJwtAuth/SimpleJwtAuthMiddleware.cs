@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNet.Authentication;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.WebEncoders;
+﻿using Microsoft.Extensions.Logging;
 using System;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Text.Encodings.Web;
+using Microsoft.Extensions.Options;
 
 namespace SimpleJwtAuth
 {
@@ -12,8 +13,8 @@ namespace SimpleJwtAuth
     {
         public SimpleJwtAuthMiddleware(RequestDelegate next,
             ILoggerFactory loggerFactory,
-            IUrlEncoder encoder,
-            SimpleJwtAuthOptions options)
+            UrlEncoder encoder,
+            IOptions<SimpleJwtAuthOptions> options)
             : base(next, options, loggerFactory, encoder)
         {
             if (next == null)
@@ -36,7 +37,7 @@ namespace SimpleJwtAuth
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (string.IsNullOrEmpty(options.Secret))
+            if (string.IsNullOrEmpty(Options.Secret))
             {
                 throw new InvalidOperationException("Secret must be set for JWT");
             }
