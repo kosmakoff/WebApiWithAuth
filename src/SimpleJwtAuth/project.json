@@ -1,28 +1,35 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.1",
   "description": "SimpleJwtAuth Class Library",
   "authors": [ "Oleg K" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+
+  "packOptions": {
+    "licenseUrl": "https://github.com/kosmakoff/WebApiWithAuth/LICENSE.md",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/kosmakoff/WebApiWithAuth"
+    },
+    "requireLicenseAcceptance": true,
+    "owners": [
+      "Oleg Kosmakov"
+    ],
+    "tags": [
+    ]
+  },
+
   "frameworks": {
-    "net451": { },
-    "dotnet5.4": {
+    "netcoreapp1.0": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-23516",
-        "System.Collections": "4.0.11-beta-23516",
-        "System.Linq": "4.0.1-beta-23516",
-        "System.Runtime": "4.0.21-beta-23516",
-        "System.Threading": "4.0.11-beta-23516"
+        "System.Collections": "4.0.11",
+        "System.Linq": "4.1.0",
+        "System.Runtime": "4.1.0"
       }
     }
   },
+
   "dependencies": {
-    "Microsoft.AspNet.Authentication": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Authorization": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Identity": "3.0.0-rc1-final",
-    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-rc1-final",
-    "Newtonsoft.Json": "8.0.2"
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
+    "Newtonsoft.Json": "9.0.1"
   }
 }
