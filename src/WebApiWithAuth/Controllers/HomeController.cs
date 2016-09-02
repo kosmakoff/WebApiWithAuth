@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace WebApiWithAuth.Controllers
 {

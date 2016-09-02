@@ -1,9 +1,7 @@
-﻿@using System.Security.Claims
-@using Microsoft.AspNet.Authorization
-@inject UserManager<ApplicationUser> _userManager
-@inject RoleManager<ApplicationRole> _roleManager
-@inject SignInManager<ApplicationUser> _signinManager
-@inject IAuthorizationService _authorizationService
+﻿@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<ApplicationRole> RoleManager
+@inject SignInManager<ApplicationUser> SigninManager
+@inject IAuthorizationService AuthorizationService
 @{ 
 	ViewBag.Title = "Home";
 }
@@ -26,9 +24,9 @@
 
 <br />
 
-@if (User.IsSignedIn())
+@if (SigninManager.IsSignedIn(User))
 {
-	var user = await _userManager.FindByIdAsync(User.GetUserId());
+	var user = await UserManager.GetUserAsync(User);
 	var roles = user.Roles.ToList();
 
 	<br />
@@ -50,7 +48,7 @@
 	<ol>
 		@foreach(var role in user.Roles)
 		{
-			var appRole = await _roleManager.FindByIdAsync(role.RoleId);
+			var appRole = await RoleManager.FindByIdAsync(role.RoleId);
 			<li>
 				<h3>@appRole.Name</h3>
 				<p>Role Claims:</p>
@@ -65,7 +63,7 @@
 		}
 	</ol>
 
-	var rolesOtherWay = await _userManager.GetRolesAsync(user);
+	var rolesOtherWay = await UserManager.GetRolesAsync(user);
 
 	<p>Got roles other way:</p>
 	<ul>

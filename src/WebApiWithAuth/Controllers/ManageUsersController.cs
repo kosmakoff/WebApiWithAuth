@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Mvc;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using WebApiWithAuth.Models;
 using WebApiWithAuth.ViewModels.DTO;
 using WebApiWithAuth.ViewModels.ManageUsers;
@@ -14,11 +14,14 @@ namespace WebApiWithAuth.Controllers
     [Authorize]
     public class ManageUsersController : ControllerBase
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public ManageUsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
-            : base(userManager)
+        public ManageUsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
             _roleManager = roleManager;
         }
 
@@ -42,7 +45,7 @@ namespace WebApiWithAuth.Controllers
 
         public async Task<IActionResult> AssignRoles()
         {
-            var user = await GetCurrentUserAsync();
+            var user = await _userManager.GetUserAsync(User);
 
             if (!(await _roleManager.RoleExistsAsync("Administrators")))
             {

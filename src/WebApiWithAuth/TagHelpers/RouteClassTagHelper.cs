@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Razor.TagHelpers;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace WebApiWithAuth.TagHelpers
 {
@@ -34,21 +30,13 @@ namespace WebApiWithAuth.TagHelpers
             var controller = ViewContext.RouteData.Values["controller"] as string;
             var action = ViewContext.RouteData.Values["action"] as string;
 
-            if ((string.IsNullOrWhiteSpace(ControllerName) || string.Compare(ControllerName, controller, true) == 0) &&
-                string.Compare(ActionName, action, true) == 0)
+            if ((string.IsNullOrWhiteSpace(ControllerName) ||
+                string.Compare(ControllerName, controller, StringComparison.OrdinalIgnoreCase) == 0) &&
+                string.Compare(ActionName, action, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                string classValue;
+                var classValue = output.Attributes.ContainsName("class") ? $"{output.Attributes["class"]} {ClassName}" : ClassName;
 
-                if (output.Attributes.ContainsName("class"))
-                {
-                    classValue = $"{output.Attributes["class"]} {ClassName}";
-                }
-                else
-                {
-                    classValue = ClassName;
-                }
-
-                output.Attributes["class"] = classValue;
+                output.Attributes.SetAttribute("class", classValue);
             }
 
             base.Process(context, output);
