@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
-using SimpleJwtAuth;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace WebApiWithAuth.Controllers
 {
@@ -17,10 +19,10 @@ namespace WebApiWithAuth.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        [Authorize(ActiveAuthenticationSchemes = SimpleJwtAuthDefaults.AuthenticationScheme)]
-        public string Get(int id)
+        [Authorize(ActiveAuthenticationSchemes = "Bearer")]
+        public string Get([FromQuery]int id)
         {
-            return "value";
+            return $"value {id}";
         }
 
         // POST api/values

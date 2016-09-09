@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using SimpleJwtAuth;
 
 namespace WebApiWithAuth
 {
@@ -53,6 +52,15 @@ namespace WebApiWithAuth
 
             // Add framework services.
             services.AddMvc();
+
+            // services.AddIdentityServerQuickstart();
+
+            services.AddIdentityServer()
+                .SetTemporarySigningCredential()
+                .AddInMemoryStores()
+                .AddInMemoryScopes(Config.GetScopes())
+                .AddInMemoryClients(Config.GetClients())
+                .AddAspNetIdentity<ApplicationUser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,15 +95,14 @@ namespace WebApiWithAuth
                 ClientSecret = Configuration["Auth:Google:Secret"]
             });
 
-            app.UseSimpleJwtAuth<ApplicationUser>(new SimpleJwtAuthOptions
+            app.UseIdentityServer();
+
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
-                Audience = Configuration["Auth:JWT:Audience"] ?? "Sample Audience",
-                ClaimsIssuer = Configuration["Auth:JWT:issuer"] ?? "Sample Issuer",
-
-                Secret = Configuration["Auth:JWT:secret"] ?? "SECRET",
-
+                Authority = "http://localhost:9080",
+                ScopeName = "api",
                 AutomaticAuthenticate = true,
-                AutomaticChallenge = true
+                RequireHttpsMetadata = false
             });
 
             app.UseMvc(routeBuilder =>
