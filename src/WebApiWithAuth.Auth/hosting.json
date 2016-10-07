@@ -1,0 +1,4 @@
+﻿{
+  "environment": "Development",
+  "urls": "http://web.local:9081"
+}

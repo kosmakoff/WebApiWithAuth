@@ -1,0 +1,81 @@
+﻿@using WebApiWithAuth.Web.Models
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<ApplicationRole> RoleManager
+@inject SignInManager<ApplicationUser> SigninManager
+@inject IAuthorizationService AuthorizationService
+@{ 
+	ViewBag.Title = "Home";
+}
+
+<h3>User Identities: (Count = @User.Identities.Count())</h3>
+<ol>
+	@foreach (var identity in User.Identities)
+	{
+		<li>
+			<p>Identity claims:</p>
+			<ul>
+				@foreach (var claim in identity.Claims)
+				{
+					<li><p>Type = @claim.Type, Value = @claim.Value</p></li>
+				}
+			</ul>
+		</li>
+	}
+</ol>
+
+<br />
+
+@if (SigninManager.IsSignedIn(User))
+{
+	var user = await UserManager.GetUserAsync(User);
+	var roles = user.Roles.ToList();
+
+	<br />
+	<p>Application User ID = @user.Id</p>
+	<p>Application User Name = @user.UserName</p>
+	<p>Application User Email = @user.Email</p>
+	<h2>Application User Claims:</h2>
+	<ul>
+		@foreach (var claim in user.Claims)
+		{
+			<li>
+				Type = @claim.ClaimType, Value = @claim.ClaimValue
+			</li>
+		}
+	</ul>
+
+	<h2>User Roles (Count = @user.Roles.Count()):</h2>
+
+	<ol>
+		@foreach(var role in user.Roles)
+		{
+			var appRole = await RoleManager.FindByIdAsync(role.RoleId);
+			<li>
+				<h3>@appRole.Name</h3>
+				<p>Role Claims:</p>
+				<ul>
+					@foreach(var claim in appRole.Claims)
+					{
+						<li>Type = @claim.ClaimType, Value = @claim.ClaimValue</li>
+					}
+				</ul>
+			</li>
+
+		}
+	</ol>
+
+	var rolesOtherWay = await UserManager.GetRolesAsync(user);
+
+	<p>Got roles other way:</p>
+	<ul>
+		@foreach (var role in rolesOtherWay)
+		{
+			<li>-- @role --</li>
+
+		}
+	</ul>
+}
+else
+{
+	<h3>User is not authenticated</h3>
+}
