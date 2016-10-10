@@ -1,4 +1,4 @@
 ﻿{
   "environment": "Development",
-  "urls": "http://web.local:9083"
+  "urls": "http://web.local.com:9083"
 }

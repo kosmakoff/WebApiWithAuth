@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using IdentityServer4;
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -110,10 +111,20 @@ namespace WebApiWithAuth.Auth
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+
+                AutomaticAuthenticate = false,
+                AutomaticChallenge = false
+            });
+
             app.UseGoogleAuthentication(new GoogleOptions
             {
                 ClientId = Configuration["Auth:Google:ClientId"],
-                ClientSecret = Configuration["Auth:Google:Secret"]
+                ClientSecret = Configuration["Auth:Google:Secret"],
+
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme
             });
 
             app.UseIdentity();

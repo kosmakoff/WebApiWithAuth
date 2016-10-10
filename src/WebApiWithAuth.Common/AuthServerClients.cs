@@ -33,13 +33,13 @@ namespace WebApiWithAuth.Common
             RedirectUris = new List<string>
             {
                 // todo: fix hardcoded values
-                "http://web.local:9083/signin-oidc"
+                "http://web.local.com:9083/signin-oidc"
             },
 
             PostLogoutRedirectUris = new List<string>
             {
                 // todo: fix hardcoded values
-                "http://web.local:9083"
+                "http://web.local.com:9083"
             },
 
             AllowedScopes = new List<string>
