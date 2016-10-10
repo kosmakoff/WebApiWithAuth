@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApiWithAuth.Common;
 using WebApiWithAuth.Web.Configuration;
 
 namespace WebApiWithAuth.Web
@@ -18,7 +18,6 @@ namespace WebApiWithAuth.Web
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName.ToLower()}.json", optional: true)
-                .AddUserSecrets()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -51,14 +50,21 @@ namespace WebApiWithAuth.Web
 
             app.UseStaticFiles();
 
-            app.UseIdentity();
-
-            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                Authority = serverOptions.Value.AuthServer,
-                ScopeName = "mvc",
+                AuthenticationScheme = "Cookies"
+            });
 
-                RequireHttpsMetadata = false
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            {
+                AuthenticationScheme = "oidc",
+                SignInScheme = "Cookies",
+
+                Authority = serverOptions.Value.AuthServer,
+                RequireHttpsMetadata = false,
+
+                ClientId = AuthServerClients.Mvc.ClientId,
+                SaveTokens = true
             });
 
             app.UseMvcWithDefaultRoute();

@@ -32,7 +32,7 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li action-name="@nameof(HomeController.Index)" controller-name="Home"><a href="@Url.Action(nameof(HomeController.Index), "Home")">Home</a></li>
-					<li action-name="@nameof(ManageUsersController.ShowUsers)" controller-name="ManageUsers"><a href="@Url.Action(nameof(ManageUsersController.ShowUsers), "ManageUsers")">Show Users</a></li>
+					<li action-name="@nameof(HomeController.Secure)" controller-name="Secure"><a href="@Url.Action(nameof(HomeController.Secure), "Home")">Secure</a></li>
 				</ul>
 				@await Html.PartialAsync("_LoginPartial")
 			</div><!-- /.navbar-collapse -->

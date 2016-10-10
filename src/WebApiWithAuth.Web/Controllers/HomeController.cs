@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApiWithAuth.Web.Controllers
 {
@@ -10,6 +11,12 @@ namespace WebApiWithAuth.Web.Controllers
         }
 
         public IActionResult Error()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult Secure()
         {
             return View();
         }

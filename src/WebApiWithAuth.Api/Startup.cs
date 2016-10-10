@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApiWithAuth.Api.Configuration;
+using WebApiWithAuth.Common;
 
 namespace WebApiWithAuth.Api
 {
@@ -55,7 +56,7 @@ namespace WebApiWithAuth.Api
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
                 Authority = serverOptions.Value.AuthServer,
-                ScopeName = "api1",
+                ScopeName = AuthServerScopes.Api.Name,
 
                 RequireHttpsMetadata = false
             });
