@@ -56,6 +56,10 @@
     "WebApiWithAuth.Common": "1.0.0"
   },
 
+  "tools": {
+    "Microsoft.DotNet.Watcher.Tools": "1.0.0-preview2-final"
+  },
+
   "frameworks": {
     "netcoreapp1.0": {
       "imports": [

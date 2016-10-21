@@ -1,4 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using IdentityServer4.Models;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +37,13 @@ namespace WebApiWithAuth.Web
             services.AddOptions();
             services.Configure<ServersOptions>(Configuration.GetSection("Servers"));
 
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-XSRF-TOKEN";
+            });
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            
             services.AddMvc();
         }
 
@@ -64,7 +78,43 @@ namespace WebApiWithAuth.Web
                 RequireHttpsMetadata = false,
 
                 ClientId = AuthServerClients.Mvc.ClientId,
-                SaveTokens = true
+                ClientSecret = "secret",
+
+                ResponseType = "code id_token",
+                Scope = { AuthServerScopes.Api.Name, StandardScopes.OfflineAccess.Name},
+
+                GetClaimsFromUserInfoEndpoint = true,
+                SaveTokens = true,
+
+                Events = new OpenIdConnectEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        var subClaim = context.Ticket.Principal.FindFirst(IdentityModel.JwtClaimTypes.Subject);
+
+                        var nameClaim = new Claim(IdentityModel.JwtClaimTypes.Name, serverOptions.Value.AuthServer + "/" + subClaim.Value);
+
+                        var givenNameClaim = context.Ticket.Principal.FindFirst(IdentityModel.JwtClaimTypes.GivenName);
+
+                        var familyNameClaim = context.Ticket.Principal.FindFirst(IdentityModel.JwtClaimTypes.FamilyName);
+
+                        var newClaimsIdentity = new ClaimsIdentity(
+                            context.Ticket.AuthenticationScheme, IdentityModel.JwtClaimTypes.Name, IdentityModel.JwtClaimTypes.Role);
+
+                        if (nameClaim != null)
+                            newClaimsIdentity.AddClaim(nameClaim);
+
+                        if (givenNameClaim != null)
+                            newClaimsIdentity.AddClaim(givenNameClaim);
+
+                        if (familyNameClaim != null)
+                            newClaimsIdentity.AddClaim(familyNameClaim);
+
+                        context.Ticket = new AuthenticationTicket(new ClaimsPrincipal(newClaimsIdentity), context.Properties, context.Ticket.AuthenticationScheme);
+
+                        return Task.FromResult(0);
+                    }
+                }
             });
 
             app.UseMvcWithDefaultRoute();

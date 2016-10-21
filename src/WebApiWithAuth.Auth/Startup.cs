@@ -8,12 +8,14 @@ using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using WebApiWithAuth.Data.Entities;
+using WebApiWithAuth.Data.Identity;
 
 namespace WebApiWithAuth.Auth
 {
@@ -71,6 +73,8 @@ namespace WebApiWithAuth.Auth
                 .AddInMemoryClients(IdentityServerManager.GetClients())
                 .AddInMemoryScopes(IdentityServerManager.GetScopes())
                 .AddAspNetIdentity<ApplicationUser>();
+
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, SiteUserClaimsPrincipalFactory>();
         }
 
         private X509Certificate2 GetSigningCertificate()

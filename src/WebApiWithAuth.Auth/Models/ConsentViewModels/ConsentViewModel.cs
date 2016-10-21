@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using IdentityServer4.Models;
 
-namespace WebApiWithAuth.Auth.Models
+namespace WebApiWithAuth.Auth.Models.ConsentViewModels
 {
     public class ConsentViewModel : ConsentInputModel
     {

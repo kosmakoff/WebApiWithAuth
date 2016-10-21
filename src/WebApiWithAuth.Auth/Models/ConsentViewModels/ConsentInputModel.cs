@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace WebApiWithAuth.Auth.Models
+namespace WebApiWithAuth.Auth.Models.ConsentViewModels
 {
     public class ConsentInputModel
     {

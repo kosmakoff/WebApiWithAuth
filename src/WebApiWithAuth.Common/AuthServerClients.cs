@@ -28,7 +28,12 @@ namespace WebApiWithAuth.Common
         {
             ClientId = "mvc",
             ClientName = "MVC Client",
-            AllowedGrantTypes = GrantTypes.Implicit,
+            AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+
+            ClientSecrets =
+            {
+                new Secret("secret".Sha256())
+            },
 
             RedirectUris = new List<string>
             {
@@ -45,7 +50,9 @@ namespace WebApiWithAuth.Common
             AllowedScopes = new List<string>
             {
                 StandardScopes.OpenId.Name,
-                StandardScopes.Profile.Name
+                StandardScopes.Profile.Name,
+                StandardScopes.OfflineAccess.Name,
+                AuthServerScopes.Api.Name
             }
         };
     }

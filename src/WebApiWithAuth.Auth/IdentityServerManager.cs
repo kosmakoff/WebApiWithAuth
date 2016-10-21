@@ -16,6 +16,7 @@ namespace WebApiWithAuth.Auth
         {
             yield return StandardScopes.OpenId;
             yield return StandardScopes.Profile;
+            yield return StandardScopes.OfflineAccess;
             yield return AuthServerScopes.Api;
         }
     }

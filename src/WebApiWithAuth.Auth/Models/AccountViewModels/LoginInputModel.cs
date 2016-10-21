@@ -3,7 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace WebApiWithAuth.Auth.Models
+namespace WebApiWithAuth.Auth.Models.AccountViewModels
 {
     public class LoginInputModel
     {

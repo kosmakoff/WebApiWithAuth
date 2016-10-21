@@ -11,13 +11,12 @@ using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApiWithAuth.Auth.Models;
+using WebApiWithAuth.Auth.Models.AccountViewModels;
 using WebApiWithAuth.Data.Entities;
 
 namespace WebApiWithAuth.Auth.Controllers

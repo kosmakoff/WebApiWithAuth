@@ -8,7 +8,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WebApiWithAuth.Auth.Models;
+using WebApiWithAuth.Auth.Models.ConsentViewModels;
 
 namespace WebApiWithAuth.Auth.Controllers
 {
@@ -122,7 +122,7 @@ namespace WebApiWithAuth.Auth.Controllers
                     }
                     else
                     {
-                        _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
+                        _logger.LogError("No scopes matching: {0}", string.Join(", ", request.ScopesRequested));
                     }
                 }
                 else
