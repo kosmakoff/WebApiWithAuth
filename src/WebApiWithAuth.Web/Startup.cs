@@ -2,17 +2,18 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApiWithAuth.Common;
 using WebApiWithAuth.Web.Configuration;
+using WebApiWithAuth.Web.Utils;
 
 namespace WebApiWithAuth.Web
 {
@@ -30,6 +31,7 @@ namespace WebApiWithAuth.Web
         }
 
         public IConfigurationRoot Configuration { get; set; }
+        private IRouter _router;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -112,12 +114,39 @@ namespace WebApiWithAuth.Web
 
                         context.Ticket = new AuthenticationTicket(new ClaimsPrincipal(newClaimsIdentity), context.Properties, context.Ticket.AuthenticationScheme);
 
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
+                    },
+
+                    OnRemoteFailure = context =>
+                    {
+                        if (context.Request.Form["error"] == "access_denied")
+                        {
+                            var dictionary = new RouteValueDictionary
+                            {
+                                ["controller"] = "Home",
+                                ["action"] = "Index",
+                                ["shit"] = "happened"
+                            };
+
+                            var vpc = new VirtualPathContext(context.HttpContext, null, dictionary);
+                            var path = _router.GetVirtualPath(vpc).VirtualPath;
+
+                            context.HandleResponse();
+                            context.Response.Redirect(path);
+                        }
+
+                        return Task.CompletedTask;
                     }
                 }
             });
 
-            app.UseMvcWithDefaultRoute();
+            // custom UseMvc method, which returns router
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            }, out _router);
         }
     }
 }
